@@ -1,0 +1,36 @@
+name: Publish Helm Chart to GHCR
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish-helm-chart:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v1
+        with:
+          version: '3.12.0'
+
+      - name: Package Helm chart
+        run: helm package ./ingress-nginx
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }} # Use GITHUB_TOKEN for authentication
+
+      - name: Push Helm chart to GHCR
+        run: |
+          HELM_CHART_NAME=$(basename ./ingress-nginx) # Extract chart name from path
+          HELM_CHART_VERSION=$(helm show chart ./ingress-nginx | grep 'version:' | awk '{print $2}') # Extract version
+          helm push ${HELM_CHART_NAME}-${HELM_CHART_VERSION}.tgz oci://ghcr.io/${{ github.repository_owner }}
+        env:
+          HELM_EXPERIMENTAL_OCI: 1 # Enable OCI support
