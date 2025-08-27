@@ -29,9 +29,6 @@ jobs:
       - name: Setup yq
         uses: mikefarah/yq@master
 
-      - name: Get charts list
-        run: charts_list=($(ls ./selectel))
-
       - name: Package Helm chart and push to GHCR
         run: |
           charts_list=($(ls ./selectel))
