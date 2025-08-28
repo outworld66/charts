@@ -36,8 +36,7 @@ jobs:
 
       - name: Package Helm chart and push to GHCR
         run: |
-          charts_list=charts_changed
-          for chart in "${charts_list[@]}"
+          for chart in "${charts_changed[@]}"
               do
                 chart_map_version[$chart]=$(helm show chart ./charts/$chart | yq .version)
                 echo $chart ${chart_map_version[$chart]}
