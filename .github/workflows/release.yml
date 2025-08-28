@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'selectel/**'
+      - 'charts/**'
       - '!**.md'
 jobs:
   publish-helm-chart:
@@ -27,15 +27,15 @@ jobs:
           version: '3.18.3'
 
       - name: Setup yq
-        uses: mikefarah/yq@master
+        uses: mikefarah/yq@v4.47.1
 
       - name: Package Helm chart and push to GHCR
         run: |
-          charts_list=($(ls ./selectel))
+          charts_list=($(ls ./charts))
           for chart in "${charts_list[@]}"
               do
-                chart_map_version[$chart]=$(helm show chart ./selectel/$chart | yq .version)
+                chart_map_version[$chart]=$(helm show chart ./charts/$chart | yq .version)
                 echo $chart ${chart_map_version[$chart]}
-                helm package ./selectel/${chart}
+                helm package ./charts/${chart}
                 helm push ${chart}-${chart_map_version[$chart]}.tgz oci://ghcr.io/${{ github.repository_owner }}
               done
