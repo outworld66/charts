@@ -23,8 +23,8 @@ jobs:
           if [ ${#charts_changed[@]} -eq 0 ]; then
               echo "No charts changed, skip build/push jobs"
           else
-              echo "charts_changed_output=${charts_changed}" >> $GITHUB_OUTPUT
-              echo "publish_charts=true"
+              echo "charts_changed_output=${charts_changed[*]}" >> $GITHUB_OUTPUT
+              echo "publish_charts=true" >> $GITHUB_OUTPUT
           fi
 
   publish-helm-chart:
@@ -32,9 +32,6 @@ jobs:
     needs: get-charts
     if: ${{ needs.get-charts.outputs.publish_charts == 'true' }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
