@@ -38,6 +38,9 @@ jobs:
     needs: get-charts
     if: ${{ needs.get-charts.outputs.output_publish_charts == 'true' }}
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
