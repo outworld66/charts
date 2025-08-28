@@ -11,6 +11,9 @@ on:
 jobs:
   get-charts:
     runs-on: ubuntu-latest
+    outputs:
+      output_charts_changed: ${{ steps.get-charts.outputs.output_charts_changed }}
+      output_publish_charts: ${{ steps.get-charts.outputs.output_publish_charts }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
