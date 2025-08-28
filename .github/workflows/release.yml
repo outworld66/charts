@@ -9,8 +9,28 @@ on:
       - 'charts/**'
       - '!**.md'
 jobs:
+  get-charts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get modified charts
+        run: |
+          files_changed="$(git show --pretty="" --name-only)"
+          charts_changed="$(echo "$files_changed" | xargs dirname | grep -o "charts/[^/]*" | sed "s/charts\///g" | sort | uniq || true)"
+
+          if [ ${#charts_changed[@]} -eq 0 ]; then
+              echo "No charts changed, skip build/push jobs"
+          else
+              echo "charts_changed_output=${charts_changed}" >> $GITHUB_OUTPUT
+              echo "publish_charts=true"
+          fi
+
   publish-helm-chart:
     runs-on: ubuntu-latest
+    needs: get-charts
+    if: ${{ needs.get-charts.outputs.publish_charts == 'true' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -30,14 +50,10 @@ jobs:
       - name: Setup yq
         uses: mikefarah/yq@v4.47.1
 
-      - name: Get modified charts
+      - name: Package Helm charts and push to GHCR
         run: |
-          files_changed="$(git show --pretty="" --name-only)"
-          charts_changed="$(echo "$files_changed" | xargs dirname | grep -o "charts/[^/]*" | sed "s/charts\///g" | sort | uniq || true)"
-
-      - name: Package Helm chart and push to GHCR
-        run: |
-          for chart in "${charts_changed[@]}"
+          charts_list = ${{ needs.get-charts.outputs.charts_changed_output }}
+          for chart in "${charts_list[@]}"
               do
                 chart_map_version[$chart]=$(helm show chart ./charts/$chart | yq .version)
                 echo $chart ${chart_map_version[$chart]}
