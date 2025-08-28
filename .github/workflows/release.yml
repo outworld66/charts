@@ -18,7 +18,7 @@ jobs:
       - name: Get modified charts
         run: |
           files_changed="$(git show --pretty="" --name-only)"
-          charts_changed="$(echo "$files_changed" | xargs dirname | grep -o "charts/[^/]*" | sed "s/charts\///g" | sort | uniq || true)"
+          charts_changed=($(echo "$files_changed" | xargs dirname | grep -o "charts/[^/]*" | sed "s/charts\///g" | sort | uniq || true)")
 
           if [ ${#charts_changed[@]} -eq 0 ]; then
               echo "No charts changed, skip build/push jobs"
