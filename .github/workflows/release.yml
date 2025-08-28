@@ -17,6 +17,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          path: charts
+          fetch-depth: 2 # to be able to obtain files changed in the latest commit
 
       - name: Setup Helm
         uses: azure/setup-helm@v1
@@ -26,7 +29,6 @@ jobs:
       - name: Get modified charts
         id: get-charts
         run: |
-          cd charts 
           files_changed="$(git show --pretty="" --name-only)"
           echo "files_changed: $files_changed\n"
           charts_changed=($(echo "$files_changed" | xargs dirname | grep -o "charts/[^/]*" | sed "s/charts\///g" | sort | uniq || true))
