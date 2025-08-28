@@ -31,7 +31,8 @@ jobs:
         run: |
           cd charts
           files_changed="$(git show --pretty="" --name-only)"
-          echo "files_changed:\\n $files_changed"
+          echo "files_changed:"
+          echo "$files_changed"
           charts_changed=($(echo "$files_changed" | xargs dirname | grep -o "charts/[^/]*" | sed "s/charts\///g" | sort | uniq || true))
 
           if [ ${#charts_changed[@]} -eq 0 ]; then
