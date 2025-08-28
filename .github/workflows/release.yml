@@ -69,3 +69,4 @@ jobs:
                 helm package ./charts/${chart}
                 helm push ${chart}-${chart_map_version[$chart]}.tgz oci://ghcr.io/${{ github.repository_owner }}
               done
+
