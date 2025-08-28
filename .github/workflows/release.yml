@@ -29,9 +29,14 @@ jobs:
       - name: Setup yq
         uses: mikefarah/yq@v4.47.1
 
+      - name: Get modified charts
+        run: |
+          files_changed="$(git show --pretty="" --name-only)"
+          charts_changed="$(echo "$files_changed" | xargs dirname | grep -o "charts/[^/]*" | sed "s/charts\///g" | sort | uniq || true)"
+
       - name: Package Helm chart and push to GHCR
         run: |
-          charts_list=($(ls ./charts))
+          charts_list=charts_changed
           for chart in "${charts_list[@]}"
               do
                 chart_map_version[$chart]=$(helm show chart ./charts/$chart | yq .version)
