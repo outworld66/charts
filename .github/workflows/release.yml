@@ -22,7 +22,7 @@ jobs:
           fetch-depth: 2 # to be able to obtain files changed in the latest commit
 
       - name: Setup Helm
-        uses: azure/setup-helm@v1
+        uses: azure/setup-helm@v4.3.1
         with:
           version: '3.18.3'
 
@@ -65,7 +65,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Setup Helm
-        uses: azure/setup-helm@v1
+        uses: azure/setup-helm@v4.3.1
         with:
           version: '3.18.3'
 
